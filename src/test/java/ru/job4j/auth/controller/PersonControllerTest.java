@@ -16,6 +16,7 @@ import ru.job4j.auth.domain.Person;
 import ru.job4j.auth.repository.PersonRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 
 import static org.mockito.Mockito.when;
@@ -45,7 +46,13 @@ class PersonControllerTest {
     }
 
     @Test
-    void findById() {
+    void findById() throws Exception {
+        Optional<Person> box = Optional.of(new Person(0, "Ivan", "pass"));
+        when(repository.findById(0)).thenReturn(box);
+        mockMvc.perform(get("/person/0"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json("{\"id\":0,\"login\":\"Ivan\",\"password\":\"pass\"}"));
     }
 
     @Test
