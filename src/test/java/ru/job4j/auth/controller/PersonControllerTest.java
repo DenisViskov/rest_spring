@@ -1,29 +1,26 @@
 package ru.job4j.auth.controller;
 
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultMatcher;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import ru.job4j.auth.AuthApplication;
 import ru.job4j.auth.domain.Person;
 import ru.job4j.auth.repository.PersonRepository;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
-
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(classes = AuthApplication.class)
 @AutoConfigureMockMvc
@@ -59,16 +56,26 @@ class PersonControllerTest {
     void create() throws Exception {
         mockMvc.perform(post("/person/")
                 .contentType(MediaType.APPLICATION_JSON)
-                .param("login", "Ivan")
-                .param("password", "pass"))
+                .content("{\"login\":\"Ivan\",\"password\":\"pass\"}"))
                 .andExpect(status().isCreated());
+        verify(repository).save(any());
     }
 
     @Test
-    void update() {
+    void update() throws Exception {
+        mockMvc.perform(put("/person/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"id\":0,\"login\":\"Ivan\",\"password\":\"pass\"}"))
+                .andExpect(status().isOk());
+        verify(repository).save(any());
     }
 
     @Test
-    void delete() {
+    void delete() throws Exception {
+        mockMvc.perform(request("DELETE", URI.create("/person/0"))
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"id\":0,\"login\":\"Ivan\",\"password\":\"pass\"}"))
+                .andExpect(status().isOk());
+        verify(repository).delete(any());
     }
 }
