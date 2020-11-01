@@ -56,7 +56,12 @@ class PersonControllerTest {
     }
 
     @Test
-    void create() {
+    void create() throws Exception {
+        mockMvc.perform(post("/person/")
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("login", "Ivan")
+                .param("password", "pass"))
+                .andExpect(status().isCreated());
     }
 
     @Test
