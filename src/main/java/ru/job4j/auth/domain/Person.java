@@ -11,7 +11,7 @@ import java.util.Objects;
  * @since 01.11.2020
  */
 @Entity
-@Table(name = "person")
+@Table(name = "accounts")
 public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
